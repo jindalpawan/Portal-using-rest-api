@@ -1,10 +1,9 @@
 from .models import Post
 from django.contrib.auth.models import User
-from django.contrib.auth import logout, login, authenticate
+from django.contrib.auth import authenticate
 import os
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from django.core.exceptions import ImproperlyConfigured
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
@@ -14,20 +13,20 @@ from .utils import get_and_authenticate_user, create_user_account
 from rest_framework import viewsets
 import json
 
-
-class AllPosts(APIView):
+class AllPosts(viewsets.ViewSet):
 	permission_classes = (IsAuthenticated,)
-	def get(self, request):
+	@action(methods=['GET', ], detail=False)
+	def showposts(self, request):
 		posts= Post.objects.all().order_by('create_date').reverse()
 		if posts:
-			serialize= PostSerializer(posts, many=True)
-			return Response(serialize)
-		data={'Error': "No posts"}
+			data= serializers.PostSerializer(posts, many=True).data()
+		else:
+			data={'Error': "No posts"}
 		return Response(data)
 
 
-class DeletePost(APIView):
-	def get(self, request, pk):
+	@action(methods=['POST', ], detail=False)
+	def deletepost(self, request, pk):
 		post= Post.objects.filter(pk=pk).first()
 		if post:
 			post.delete()
@@ -41,8 +40,6 @@ class AuthViewSet(viewsets.ViewSet):
 
 	permission_classes = [AllowAny, ]
 	serializer_class = serializers.EmptySerializer
-	serializer_classes = {	'register': serializers.UserRegisterSerializer			
-							}
 	
 	@action(methods=['POST', ], detail=False)
 	def login(self, request):
@@ -55,7 +52,7 @@ class AuthViewSet(viewsets.ViewSet):
 
 	@action(methods=['POST', ], detail=False)
 	def register(self, request):
-		serializer = self.get_serializer(data=request.data)
+		serializer = serializers.UserRegisterSerializer(data=request.data)
 		serializer.is_valid(raise_exception=True)
 		user = create_user_account(**serializer.validated_data)
 		data = serializers.AuthUserSerializer(user).data
@@ -69,11 +66,3 @@ class AuthViewSet(viewsets.ViewSet):
 		else:
 			data = {'failed': 'Have not token'}
 		return Response(data=data, status=status.HTTP_200_OK)
-
-	def get_serializer_class(self):
-		if not isinstance(self.serializer_classes, dict):
-			raise ImproperlyConfigured("serializer_classes should be a dict mapping.")
-
-		if self.action in self.serializer_classes.keys():
-			return self.serializer_classes[self.action]
-		return super().get_serializer_class()
