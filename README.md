@@ -53,15 +53,8 @@ Note: Ubuntu 16.04 LTS is recommended to use for the development environment.
 
         python manage.py runserver
 
-7. With your Django App and Redis running, open two new terminal windows/tabs. 
-   In each new window, navigate to your project directory, activate your virtualenv, 
-   and then run the following commands (one in each window):
-   
-   $ celery -A picha worker -l info
 
-   $ celery -A picha beat -l info
-
-8. Its time to rock. Visit [http://localhost:8000][localhost] in your browser and you should be all set.
+7. Its time to rock. Visit [http://localhost:8000][localhost] in your browser and you should be all set.
 
 
 [venv]: http://pypi.python.org/pypi/virtualenv
