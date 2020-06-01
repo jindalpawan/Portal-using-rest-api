@@ -12,6 +12,8 @@ from . import serializers
 from rest_framework.views import APIView
 from .utils import get_and_authenticate_user, create_user_account
 from rest_framework import viewsets
+import json
+
 
 class AllPosts(APIView):
 	permission_classes = (IsAuthenticated,)
@@ -25,26 +27,28 @@ class AllPosts(APIView):
 
 
 class DeletePost(APIView):
-	permission_classes = (IsAuthenticated,)
-	def delete(self, request, pk):
+	def get(self, request, pk):
 		post= Post.objects.filter(pk=pk).first()
-		post.delete()
-		data={'Massage': "Post Deleted"}
+		if post:
+			post.delete()
+			data={'Massage': "Post Deleted"}
+		else:
+			data={'Error': "Post not found"}
 		return Response(data)
 
 
-class AuthViewSet(viewsets.ModelViewSet):
+class AuthViewSet(viewsets.ViewSet):
+
 	permission_classes = [AllowAny, ]
 	serializer_class = serializers.EmptySerializer
-	serializer_classes = {'login': serializers.UserLoginSerializer,
-							'register': serializers.UserRegisterSerializer			
+	serializer_classes = {	'register': serializers.UserRegisterSerializer			
 							}
 	
 	@action(methods=['POST', ], detail=False)
 	def login(self, request):
-		serializer = self.get_serializer(data=request.data)
-		serializer.is_valid(raise_exception=True)
-		user = get_and_authenticate_user(**serializer.validated_data)
+		data=json.dumps(request.data)
+		data=json.loads(data)
+		user = get_and_authenticate_user(data["username"], data["password"])
 		data = serializers.AuthUserSerializer(user).data
 		return Response(data=data, status=status.HTTP_200_OK)
 	
@@ -57,11 +61,13 @@ class AuthViewSet(viewsets.ModelViewSet):
 		data = serializers.AuthUserSerializer(user).data
 		return Response(data=data, status=status.HTTP_201_CREATED)
 
-	@action(methods=['POST', ], detail=False)
+	@action(methods=['GET', ], detail=False)
 	def logout(self, request):
-		request.user.auth_token.delete()
-		data = {'success': 'Sucessfully logged out'}
-		print(data)
+		if request.user.is_authenticated:
+			request.user.auth_token.delete()
+			data = {'success': 'Sucessfully logged out'}
+		else:
+			data = {'failed': 'Have not token'}
 		return Response(data=data, status=status.HTTP_200_OK)
 
 	def get_serializer_class(self):

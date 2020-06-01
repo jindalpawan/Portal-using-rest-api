@@ -10,12 +10,6 @@ class PostSerializer(serializers.ModelSerializer):
 		fields =['title', 'author', 'content', 'crate_date']
 
 
-class UserLoginSerializer(serializers.ModelSerializer):
-	class Meta:
-		model = User
-		fields =['username','password']
-
-
 class AuthUserSerializer(serializers.ModelSerializer):
 	auth_token = serializers.SerializerMethodField()
 
@@ -24,8 +18,10 @@ class AuthUserSerializer(serializers.ModelSerializer):
 		fields = ('id','username' ,'email', 'first_name', 'last_name','auth_token')
 
 	def get_auth_token(self, obj):
+		Token.objects.filter(user=obj).delete()
 		token = Token.objects.create(user=obj)
 		return token.key
+
 
 class EmptySerializer(serializers.Serializer):
 	pass
