@@ -29,7 +29,7 @@ class AllPosts(APIView):
 class DeletePost(APIView):
 	permission_classes = (IsAuthenticated,)
 	def delete(self, request, pk):
-		post= Post.objects.filter(pk=pk).first()
+		post= Post.objects.filter(pk=pk, author=request.user).first()
 		if post:
 			post.delete()
 			data={'Massage': "Post Deleted"}
