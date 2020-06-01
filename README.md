@@ -24,7 +24,7 @@ Linux users should have Python already installed. Ensure Pip is installed via
 your package manager and you should be all set.
 
 
-## Linux based Setup for NSE development
+## Linux based Setup for development
 
 Note: Ubuntu 16.04 LTS is recommended to use for the development environment.
 
