@@ -38,6 +38,17 @@ class DeletePost(APIView):
 		return Response(data)
 
 
+class CreatePost(APIView):
+	permission_classes = (IsAuthenticated,)
+	def post(self, request):
+		data=json.dumps(request.data)
+		data=json.loads(data)
+		p=Post(title=data["title"], content=data["content"], author=request.user)
+		p.save()
+		serializer=  serializers.PostSerializer(p, many=False).data
+		return Response(serializer)
+
+
 class AuthViewSet(viewsets.ViewSet):
 
 	permission_classes = [AllowAny, ]
