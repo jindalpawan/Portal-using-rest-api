@@ -1,9 +1,17 @@
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework.authtoken.views import obtain_auth_token
+from blog import views
+from rest_framework import routers
 
+router = routers.DefaultRouter()
+router.register(r'users', views.AuthViewSet)
 urlpatterns = [
-	path('', include('blog.urls')),
     path('admin/', admin.site.urls),
-    path('login/', obtain_auth_token, name='login'),
+    path('loginn/', obtain_auth_token, name='login'),
+    url(r'^', include(router.urls)),
+    #path('', include('blog.urls')),
+    #path('registration/', include('rest_auth.registration.urls')),
+
+
 ]
