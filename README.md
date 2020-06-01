@@ -44,21 +44,16 @@ Note: Ubuntu 16.04 LTS is recommended to use for the development environment.
 
         pip install -r requirements.txt
 
-5. You are all set. Run the makemigrations command
-
-        python manage.py makemigrations
-
-
-6. You are all set. Run the migrate command
+5. You are all set. Run the migrate command
 
         python manage.py migrate
 
         
-7. You are all set. Run the final command
+6. You are all set. Run the final command
 
         python manage.py runserver
 
-8. With your Django App and Redis running, open two new terminal windows/tabs. 
+7. With your Django App and Redis running, open two new terminal windows/tabs. 
    In each new window, navigate to your project directory, activate your virtualenv, 
    and then run the following commands (one in each window):
    
@@ -66,7 +61,7 @@ Note: Ubuntu 16.04 LTS is recommended to use for the development environment.
 
    $ celery -A picha beat -l info
 
-9. Its time to rock. Visit [http://localhost:8000][localhost] in your browser and you should be all set.
+8. Its time to rock. Visit [http://localhost:8000][localhost] in your browser and you should be all set.
 
 
 [venv]: http://pypi.python.org/pypi/virtualenv
