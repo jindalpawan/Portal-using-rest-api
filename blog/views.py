@@ -4,6 +4,7 @@ from django.contrib.auth import authenticate
 import os
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+from django.core.exceptions import ImproperlyConfigured
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
@@ -13,20 +14,21 @@ from .utils import get_and_authenticate_user, create_user_account
 from rest_framework import viewsets
 import json
 
-class AllPosts(viewsets.ViewSet):
+
+class AllPosts(APIView):	
 	permission_classes = (IsAuthenticated,)
-	@action(methods=['GET', ], detail=False)
-	def showposts(self, request):
-		posts= Post.objects.all().order_by('create_date').reverse()
+	def get(self, request):
+		posts= Post.objects.all()
 		if posts:
-			data= serializers.PostSerializer(posts, many=True).data()
-		else:
-			data={'Error': "No posts"}
+			serialize= serializers.PostSerializer(posts, many=True).data
+			return Response(serialize)
+		data={'Error': "No posts"}
 		return Response(data)
 
 
-	@action(methods=['POST', ], detail=False)
-	def deletepost(self, request, pk):
+class DeletePost(APIView):
+	permission_classes = (IsAuthenticated,)
+	def delete(self, request, pk):
 		post= Post.objects.filter(pk=pk).first()
 		if post:
 			post.delete()
