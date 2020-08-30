@@ -15,7 +15,7 @@ class AuthUserSerializer(serializers.ModelSerializer):
 
 	class Meta:
 		model = User
-		fields = ('id','username' ,'email', 'first_name', 'last_name','auth_token')
+		fields = ('id','username','auth_token')
 
 	def get_auth_token(self, obj):
 		Token.objects.filter(user=obj).delete()
